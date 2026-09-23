@@ -497,4 +497,8 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
 - 公開 URL: <https://01a0ccab-923c-ef0c-b3be-aa4fc076178b.share.connect.posit.cloud/>（認証なしで 200 = 公開。GitHub リポジトリは private のまま）
 - 公開版の確認: 背景タイルは鍵付き（透かしなし）、5 タブでブラウザのエラー 0、Shiny の出力エラー 0、Moran 図と行列図の描画あり、Swipe の左右ポリゴン 396、fit 表 11 行
 - 設定 `.toml` をコミット（`deployments/` は ignore）。両 README に Live demo の URL とデプロイ時の注意を追記
+- 補足:
+  - アプリは公開（誰でも閲覧可）、GitHub リポジトリは private。README の Live demo のリンク先は誰でも開けるが、README 自体は GitHub が private のあいだは他人から見えない
+  - 今後アプリを更新するときは、Positron で `shiny_app/` を開き、同じ設定（`Kansai MGNST viewer — penalize-O1E2`）で **Deploy** を押せば同じ URL が更新される
+  - `deployments/` に未使用の下書き記録 `deployment-PDV8.toml` が残っている（git の対象外、デプロイに影響なし）
 - 前回リポジトリ名は `git remote -v` で `s-ohta-s/spatial-interactions` を確認してからリンクした
