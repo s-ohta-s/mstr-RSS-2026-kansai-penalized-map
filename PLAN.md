@@ -388,4 +388,31 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
   - transformed: 396 行（time 1/2 × 198）、min/max は定義書と全 6 列一致（y1 [-1.8887, 3.5265]、y2 [-2.1456, 2.9951]、x_common1 [7.7212, 8.7828]、x_common2 [0, 8.6415]、x_specific1_1 [-5.79, 1.41]、x_specific2_1 [7.8, 231.1]）
   - muni_sf: is_target TRUE 198 / FALSE 7、対象コードと `substr(mapping$code,1,5)` が 198 件全一致、EPSG 4326。pref_borders 13 行
   - W: 198×198、行和 = 1
-- コミット前確認: 改行はすべて LF（`core.autocrlf=true` でも内容は変わらない）。`.claude/` は ignored。秘密情報らしき文字列の検索でヒットしたのは renv.lock のパッケージ説明文と、変数名に触れた `.gitignore`/PLAN.md のみ
+- コミット前確認: `.claude/` は ignored。秘密情報らしき文字列の検索でヒットしたのは renv.lock のパッケージ説明文と、変数名に触れた `.gitignore`/PLAN.md のみ
+- **訂正**: 「改行はすべて LF」は誤り（Git Bash の `grep $'\r'` が CR を検出できていなかった）。実際は 30 ファイルが CRLF で、初回コミット `8a4801c` では `core.autocrlf=true` により LF に変換されて記録されていた（作業ツリーは無変更、ハッシュはコピー元と一致のまま）
+  - 対処（ユーザー承認済み）: `.gitattributes` に `* -text` を追加し `git add --renormalize .` → コミット `6a445e7`。以後、全追跡ファイルの HEAD blob と作業ファイルが `git hash-object --no-filters` で一致（差分 0）
+
+### Phase 2（2026-09-23, Opus 5.5）
+
+- 新規 `shiny_app/R/constants.R`（base R のみ）: `YEARS`（1→2015, 2→2020）、`YEAR_BASE`/`YEAR_RESID`、`CRITERIA`/`CRITERION_LABEL`、`OUTCOMES`（outcome, key, label, short, palette）、`COVARIATES`、`OUTCOME_KEY/LABEL/SHORT`、`MODEL_TYPE/IDS/LABELS/FAMILY`、`FAMILY_LABEL/COLOR`。prep 3 本はこれを `source` し、ハードコードの MODEL_* を廃止
+  - パレットは `reference/create_heatmaps_en.r` と一致（y1 plasma、y2 mako、説明変数 viridis、残差 RdBu `direction=1`）
+- `build_app_data.R`: 列 `criterion` を追加。残差 = `y*_resid`、推定値 = `y*_pred`（`resid_reduced` は読まない）。**label に criterion を含めない**（`variable` キーは pAIC/pBIC 共通なので、選択肢が重複しない。`(category, variable)` ごとに label 1 つを検査）
+- `build_spatial_diag.R`: `criterion × model × outcome` の 44 組。`p_analytic`（moran.test）列も保持。seed / nsim は前回どおり
+- `build_matrices.R`: 両基準の comparison_table を読み `criterion` 列を追加。`coef_matrices.rds = list(coef, fit, gamma)`
+  - **有意性の選び方（PLAN の文言から変更）**: 「`signif_psi` が空なら Hessian」ではなく **「Ψ-SE があれば Ψ、無く Hessian-SE があれば Hessian、どちらも無ければ記号なし（source NA）」**。理由: `signif_psi` が空でも Ψ-SE がある場合は「有意でない」という意味であり、Hessian に切り替えてはいけない（例: 1111 の A[1,2]）。`se` 列と `signif_source` 列を保持
+  - 修正したバグ: `gamma_optimal_summary.csv` は model_id がすべて数字に見えるため `read.csv` が数値化し `0111`→`111` になっていた。`colClasses = c(model_id = "character")` で読む（`model_selection_summary.csv` も同様に明示）
+- **ゲート: 3 本とも exit 0、警告 0、エラー 0**（`options(warn=1)` で実行）。`app_data.rds` / `spatial_diag.rds` / `coef_matrices.rds` を更新、`muni_sf.rds` / `pref_borders.rds` は無変更
+
+サニティチェック出力（要約）:
+
+- app_data: **19,800 行**（response 792 / covariate 1,584 / residual 8,712 / fitted 8,712）、残差・推定値は 2020 のみ、198 市町村、muni_sf の対象 198 コードと一致
+  - 応答・説明変数の範囲（2 年プール）は定義書と 6 変数とも一致
+  - pAIC vs pBIC 残差の max |diff|: 1011 0.059176、1101 0.216146、0101 0.091183、1001 0.055013、他 7 モデルは 0（§0.4 の「0.06〜0.35」とは幅が少し違う。§0.4 の値は推定値も含めた差か、別の集計と思われる。一致・不一致のパターンは §0.4 どおり）
+- spatial_diag: moran 44 行、lisa 8,712 行
+  - **Moran's I 照合（pAIC、moran.test、小数 4 桁）: e1(1111) +0.016917→+0.0169、e2(1111) +0.022339→+0.0223、e1(dddd) +0.007318→+0.0073、e2(dddd) +0.010999→+0.0110。4 値とも参照値と一致**
+  - 平均 |I|: 従来 y1 0.176 / y2 0.186、新手法 pAIC y1 0.061 / y2 0.046、pBIC y1 0.074 / y2 0.044
+- coef: 352 行（15 セル + Σ[2,1] ミラー）× 11 モデル × 2 基準
+  - 有意性ソース（present セル）: A = psi 44、R = hessian 32 / なし 8、Λ = hessian 32 / なし 8、Σ = なし 72（「なし」は SE の無い従来モデルの対角と Σ）
+  - A present = 0: 1101 / 0101 / 1001 / 000d。Λ 非対角 present: 従来 0/10、新手法 8/12（pAIC）
+  - pAIC vs pBIC 行列推定値の max |diff|: 1011 0.0317、1101 0.2163、0101 0.0516、1001 0.0272、他 0
+  - fit: pAIC 最良 1111 (MGNS)、pBIC 最良 0ddd (IndSEM)。gamma 6 行（1111, 0111, 1011, 1101, 0101, 1001）
