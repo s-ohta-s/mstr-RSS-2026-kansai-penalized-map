@@ -479,4 +479,11 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
 - 直接依存: shiny 1.14.0, leaflet 2.2.3, leaflet.extras2 1.3.2, sf 1.1-1, dplyr 1.2.1, htmltools 0.5.9, ggplot2 4.0.3, RColorBrewer 1.1-3, viridisLite 0.4.3
 - **前回の lock との差分は CRAN の URL 1 行のみ**（`https://cran.r-project.org` → `https://cloud.r-project.org`）。パッケージ数 78、版もすべて同じ。PLAN の「差分が出る」という見込みは外れた（前回の lock は 2026-09-01 に R 4.6.1 で作り直されていたため）
 - 残り（push、Posit Connect Cloud への新規デプロイ）はユーザーの指示待ち
+
+### Phase 6-2: GitHub への push（2026-09-23, Opus 5.5）
+
+- ユーザーが GitHub に空の private リポジトリを作成。`git ls-remote origin` で ref 0 件（空）、認証なしのページ取得は 404（private）を確認
+- push 前確認: 追跡 54 ファイルに `.Renviron` / `.claude/` / `.posit/publish/deployments/` なし。キーらしき値の検索でヒットなし（PLAN.md の `Sys.setenv(CARTO_BASEMAP_KEY='')` の説明のみ）
+- ユーザー指示で `git push -u origin main`。リモートの `main` = `65d1ec8`（ローカルと一致）。push 後、このログ追記を別コミットにしている
+- 残り: Posit Connect Cloud への新規デプロイ（ユーザー操作、`CARTO_BASEMAP_KEY` は secret）
 - 前回リポジトリ名は `git remote -v` で `s-ohta-s/spatial-interactions` を確認してからリンクした
