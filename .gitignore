@@ -1,0 +1,29 @@
+# --- Secrets (never commit) --------------------------------------------------
+.Renviron
+
+# --- Local tooling / machine-specific config --------------------------------
+.claude/
+# Per-machine Posit Publisher deployment records (content IDs are account-specific)
+**/.posit/publish/deployments/
+
+# --- R session / IDE junk ---------------------------------------------------
+.Rhistory
+.RData
+.Rapp.history
+.Ruserdata
+*.Rproj
+.Rproj.user/
+renv/library/
+renv/staging/
+renv/python/
+renv/sandbox/
+
+# --- temp / scratch ---------------------------------------------------------
+shiny_app/prep/_*.R
+shiny_app/_*.R
+*.log
+
+# --- OS junk ----------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini

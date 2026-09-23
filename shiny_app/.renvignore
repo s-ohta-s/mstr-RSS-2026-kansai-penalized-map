@@ -1,0 +1,4 @@
+# Keep the deployed environment lean: the data-prep script uses heavy packages
+# (rmapshaper, spdep, …) that the running app does not need. Exclude it so renv
+# dependency discovery / Posit Publisher don't add them to renv.lock.
+prep/
