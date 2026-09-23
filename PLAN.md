@@ -471,4 +471,12 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
 - `shiny_app/DESIGN_penalized.md`（日本語、前回 DESIGN に合わせた）: 本計画 §0〜§3 の確定内容と、実装中に決めたこと（有意性の選び方、label に criterion を入れない、ホバーラベルは名前なしリスト、model_id は文字列で読む、フォールバックの透かし）を仕様として整理
 - `muni_sf.rds` の元になった N03 の版は前回リポジトリに記録が無かった → **ユーザー確認: `N03-20210101`**。README に記載
 - ユーザー確認: LICENSE の著作権者は `s-ohta-s` のまま。データのライセンスは「各提供元の規約に従う」のまま（前回 README の CC BY 4.0 には揃えない）
+
+### Phase 6-1: renv 固定（2026-09-23, Opus 5.5）
+
+- `renv::snapshot(project = "shiny_app", type = "implicit", prompt = FALSE)`（renv 1.2.4、R 4.6.1）。lockfile のみ書き出し、`renv/` や `.Rprofile` は作られていない（git status で確認）
+- 依存の走査対象は `app.R`, `R/helpers.R`, `renv.lock` のみ。**`prep/` は `.renvignore` で除外され、`spdep` は lock に入らない**
+- 直接依存: shiny 1.14.0, leaflet 2.2.3, leaflet.extras2 1.3.2, sf 1.1-1, dplyr 1.2.1, htmltools 0.5.9, ggplot2 4.0.3, RColorBrewer 1.1-3, viridisLite 0.4.3
+- **前回の lock との差分は CRAN の URL 1 行のみ**（`https://cran.r-project.org` → `https://cloud.r-project.org`）。パッケージ数 78、版もすべて同じ。PLAN の「差分が出る」という見込みは外れた（前回の lock は 2026-09-01 に R 4.6.1 で作り直されていたため）
+- 残り（push、Posit Connect Cloud への新規デプロイ）はユーザーの指示待ち
 - 前回リポジトリ名は `git remote -v` で `s-ohta-s/spatial-interactions` を確認してからリンクした
