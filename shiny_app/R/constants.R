@@ -54,6 +54,17 @@ OUTCOME_KEY   <- setNames(OUTCOMES$key,   OUTCOMES$outcome)
 OUTCOME_LABEL <- setNames(OUTCOMES$label, OUTCOMES$outcome)
 OUTCOME_SHORT <- setNames(OUTCOMES$short, OUTCOMES$outcome)
 
+# --- Variable categories (Explore tab) -------------------------------------------
+CATEGORY_LABELS <- c(
+  response      = "Response variable",
+  covariate     = "Covariate",
+  fitted        = "Fitted value",
+  residual      = "Residual",
+  residual_diff = "Residual difference"
+)
+# Categories that exist for YEAR_RESID only and depend on the criterion.
+RESID_CATS <- c("residual", "fitted", "residual_diff")
+
 # --- Models ------------------------------------------------------------------------
 # All 11 estimated models. Type label for display.
 MODEL_TYPE <- c(

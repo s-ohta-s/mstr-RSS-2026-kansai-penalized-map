@@ -416,3 +416,33 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
   - A present = 0: 1101 / 0101 / 1001 / 000d。Λ 非対角 present: 従来 0/10、新手法 8/12（pAIC）
   - pAIC vs pBIC 行列推定値の max |diff|: 1011 0.0317、1101 0.2163、0101 0.0516、1001 0.0272、他 0
   - fit: pAIC 最良 1111 (MGNS)、pBIC 最良 0ddd (IndSEM)。gamma 6 行（1111, 0111, 1011, 1101, 0101, 1001）
+
+### Phase 3（2026-09-23, Opus 5.5）
+
+変更:
+
+- `app.R` / `helpers.R` を前回版から改修（5 タブ構成は維持）。`constants.R` → `helpers.R` の順に source
+  - `CATEGORY_LABELS` / `RESID_CATS` を `constants.R` へ移動。outcome の選択肢・キー・ラベル・パレットはすべて `OUTCOMES` / `COVARIATES` から生成（"income" / "pop_growth" 等のハードコードを撤去）
+  - `add_basemap(map, layerId, pane)` と `base_map()` を追加。キーがあれば鍵付き CARTO URL、無ければ `providers$CartoDB.Positron`（`addProviderTiles` も "tile" として登録されるので Swipe の side-by-side はそのまま動く）。`stop()` は撤去。起動時に `[basemap] ...` を message（キーの値は出さない）
+  - Explore: criterion ラジオ（残差・推定値・残差差分のときだけ表示）、**`observeEvent` のトリガーリストに `input$exp_criterion` を追加**。凡例タイトルに `[pAIC]` / `[pBIC]`
+  - Swipe: 左右それぞれ model + criterion。バッジに criterion と該当 criterion の Moran's I
+  - Diagnostics / Model structure: criterion セレクタ。fit 表は選択 criterion でソートし `d_eff`, `γ`, `logLik`, 値, Δ を表示。行列図 subtitle に有意性の注記（3 行）
+  - ポップアップは `popup_all()` で 198 件を列ごとに一括生成（前回の 1 件ずつの dplyr filter より速い）
+  - 任意項目「Moran 棒グラフで pAIC/pBIC を dodge 表示」は実装していない
+- `build_app_data.R` のラベルを `Residual: Aged 65+ (MGNS (1111))` → `Residual: Aged 65+ — MGNS (1111)` に変更（二重括弧の解消）し再生成。**label 以外の全列は変更前と identical**（label 17,424 行のみ変化）
+- **バグ修正（前回アプリから引き継いだもの）**: ホバー用ラベルを `mapply(..., SIMPLIFY = FALSE)` で作っていたため、市町村名が名前として付いたリストになり、JSON ではオブジェクトとして送られていた。leaflet は各ポリゴンのツールチップに 198 件分のオブジェクトを渡し、ホバー時に `appendChild ... is not of type 'Node'` を出してラベルが表示されなかった。`USE.NAMES = FALSE` を付けて修正（helpers `hover_labels`、app の Panel change / LISA の 3 か所）。修正後、3 地図とも tooltip content は 198 件すべて string、ブラウザのエラー 0。**前回アプリ（`20260613_noPenalty/shiny_app/`）にも同じコードがある**（読み取り専用なので未修正）
+- `.claude/launch.json` に `shiny-penalized-nokey`（port 7898、`Sys.setenv(CARTO_BASEMAP_KEY='')` してから起動）を追加
+
+ゲート結果（launch.json で起動、ブラウザペインで操作、800×600）:
+
+- 5 タブすべて描画・操作可。R ログは `[basemap] CARTO Positron (API key from CARTO_BASEMAP_KEY)` と `Listening on ...` のみ（warning / error なし）
+- **Explore の criterion 切替**（Residual、Aged 65+、ポリゴンの fillColor を JS で比較）: **1011 は pAIC→pBIC で 99/198 の色が変化、1111 は 0/198**。凡例タイトルも `[pAIC]` / `[pBIC]` に切り替わる
+- **Swipe**: 初期表示は左 0ddd/pAIC（Moran I 0.003）、右 0111/pAIC（0.012）。**左 1101/pAIC・右 1101/pBIC で 164/198 の色が左右で異なる**。バッジの Moran I は 0.021 / 0.062（spatial_diag と一致）。タイル層は left / right の pane に 1 枚ずつ、どちらも鍵付き
+- Diagnostics: pBIC に切り替えると 1011 / 1101 / 0101 / 1001 の棒だけが変わる（1101: 0.021 → 0.062）。LISA 凡例に model と criterion
+- Model structure: pAIC 順は 1111, 0111, dddd, 0ddd …、pBIC 順は 0ddd, 0111, 1111, dddd …。列 `Model, Family, n par, d_eff, γ, logLik, <crit>, Δ<crit>, R²`
+- ポップアップ: 川上村の 1111 残差（pAIC, y1）-0.888 = console.txt の res_y1 (1111) 最小値 -0.8885
+- **キーなし起動**（`shiny-penalized-nokey`）: 起動し 5 タブとも動作、Swipe も left/right の tile 層と境界線あり。R ログは `[basemap] CARTO_BASEMAP_KEY not set -> fallback providers$CartoDB.Positron`。**ただし CARTO は鍵なしアクセスに「API KEY REQUIRED」の透かし入りタイルを返す** → ユーザー判断: **PLAN どおり透かしのまま**にし、README（Phase 5）に明記する
+- 所見（仕様どおりだが要注意）:
+  - 応答・推定値の共通色範囲は全 11 モデル × 2 基準の推定値を含むため、y1 の凡例は -3 付近まで広がる（1101 等の当てはまりの悪いモデルの推定値）。Phase 4 で数値確認
+  - 残差の共通範囲 ±max も当てはまりの悪いモデルで決まるため、1111 等の良いモデルの残差地図は色が薄い（Swipe は 2 地図だけの範囲なので影響なし）
+  - 画面幅 800px では Moran 図のタイトルが右で切れる（前回と同じレイアウト）

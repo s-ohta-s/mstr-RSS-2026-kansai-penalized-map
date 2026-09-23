@@ -129,7 +129,7 @@ for (crit in CRITERIA) {
           muni_code = df$muni_code, year = YEAR_RESID, category = q,
           variable = key, outcome = oc, model = mid, criterion = crit,
           value = df[[col]],
-          label = sprintf("%s: %s (%s)",
+          label = sprintf("%s: %s — %s",
                           if (q == "residual") "Residual" else "Fitted",
                           OUTCOME_SHORT[[oc]], MODEL_LABELS[[mid]]),
           stringsAsFactors = FALSE
