@@ -469,5 +469,6 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
 - ルート `README.md`（英語）: 概要（地域・年・変数表・11 モデル表・pAIC/pBIC の違い・イノベーション残差）、フォルダ構成、Quick start、ベースマップのキー（**キーなしだと透かし入りタイル**になることを明記）、再現手順（prep 3 本 → runApp）、データ出典（定義書 §8 の引用例をそのまま、e-Stat 利用規約、N03、OSM/CARTO）、ライセンス（コード MIT、データは各提供元の規約）
 - `shiny_app/README.md`（英語）: 罰則なし版からの変更点、5 タブ、色スケール（000d に範囲が引っ張られる点も明記）、起動、キー、ファイル構成と `.rds` の列、データ再生成、Posit Connect Cloud へは新規デプロイ
 - `shiny_app/DESIGN_penalized.md`（日本語、前回 DESIGN に合わせた）: 本計画 §0〜§3 の確定内容と、実装中に決めたこと（有意性の選び方、label に criterion を入れない、ホバーラベルは名前なしリスト、model_id は文字列で読む、フォールバックの透かし）を仕様として整理
-- 確認できなかったこと: `muni_sf.rds` の元になった N03 の版は前回リポジトリに記録が無い（静止画スクリプトは `N03-20210101`）。README にはその旨を書いた
+- `muni_sf.rds` の元になった N03 の版は前回リポジトリに記録が無かった → **ユーザー確認: `N03-20210101`**。README に記載
+- ユーザー確認: LICENSE の著作権者は `s-ohta-s` のまま。データのライセンスは「各提供元の規約に従う」のまま（前回 README の CC BY 4.0 には揃えない）
 - 前回リポジトリ名は `git remote -v` で `s-ohta-s/spatial-interactions` を確認してからリンクした

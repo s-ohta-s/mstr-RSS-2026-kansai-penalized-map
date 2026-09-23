@@ -157,10 +157,9 @@ and are reused from the earlier viewer; they are not rebuilt here.
   [e-Stat Terms of Use](https://www.e-stat.go.jp/terms-of-use).
 - **Municipality polygons** — National Land Numerical Information, Administrative Areas (N03),
   Ministry of Land, Infrastructure, Transport and Tourism:
-  <https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html>. The bundled polygons are
-  simplified and clipped to Kansai and its neighbouring prefectures. (The N03 release used to
-  build them is not recorded in this repository; the reference static maps use
-  `N03-20210101`.)
+  <https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v3_1.html>, release
+  `N03-20210101` (as of January 1, 2021). The bundled polygons are simplified and clipped to
+  Kansai and its neighbouring prefectures.
 - **Basemap** — © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors,
   © [CARTO](https://carto.com/attributions) (shown on the map).
 
