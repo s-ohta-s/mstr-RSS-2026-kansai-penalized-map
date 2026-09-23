@@ -11,6 +11,10 @@ non-penalized viewer ([s-ohta-s/spatial-interactions](https://github.com/s-ohta-
 
 The app only **reads pre-computed files**; it does not run any estimation.
 
+**🔗 Live demo:** <https://01a0ccab-923c-ef0c-b3be-aa4fc076178b.share.connect.posit.cloud/>
+(Posit Connect Cloud; no R installation needed. The free tier sleeps when idle, so the first
+load may take a moment.)
+
 ---
 
 ## Overview

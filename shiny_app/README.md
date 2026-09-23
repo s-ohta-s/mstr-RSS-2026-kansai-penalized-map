@@ -7,6 +7,8 @@ Conventional Individual Regression Models.*
 The app **only reads pre-computed `.rds` files**; it performs no estimation and no spatial
 statistics at runtime. Everything is built by the scripts in `prep/`.
 
+**Live demo:** <https://01a0ccab-923c-ef0c-b3be-aa4fc076178b.share.connect.posit.cloud/>
+
 ## What changed from the non-penalized viewer
 
 The layout (five tabs) follows the earlier non-penalized viewer
@@ -135,7 +137,13 @@ gamma_optimal_summary.csv, fitted_residuals_p*/}`. Set `MSNR_REPO_ROOT` to run f
 
 ## Deployment (Posit Connect Cloud)
 
-Deploy this folder as a **new** deployment (do not reuse the non-penalized viewer's
-`.posit/` configuration, or you may overwrite that app). Include `app.R`, `R/`, `data/`,
-`renv.lock` and `.renvignore`; `prep/` is not needed at runtime. Set `CARTO_BASEMAP_KEY` as a
-secret. Commit the generated `.posit/publish/*.toml`; `.posit/publish/deployments/` is ignored.
+The app is deployed with Posit Publisher from this folder, using
+`.posit/publish/Kansai MGNST viewer — penalize-O1E2.toml` (a separate deployment from the
+non-penalized viewer). To update it, open `shiny_app/` in Positron and click **Deploy** again.
+
+- `files` must list `app.R`, `R`, `data`, `renv.lock` and `.renvignore` (`prep/` is not needed
+  at runtime). Publisher's default list contained only `app.R`, which would fail at startup.
+- For Connect Cloud, `[r]` accepts only `version`; `package_file` / `package_manager` are
+  rejected by the schema. `renv.lock` is uploaded as a file.
+- `CARTO_BASEMAP_KEY` is a secret (only its name is in the `.toml`).
+- `.posit/publish/deployments/` (per-machine deployment records) is git-ignored.

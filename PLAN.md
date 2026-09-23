@@ -486,4 +486,15 @@ MODEL_TYPE / MODEL_FAMILY / MODEL_LABELS / FAMILY_LABEL / FAMILY_COLOR  # 前回
 - push 前確認: 追跡 54 ファイルに `.Renviron` / `.claude/` / `.posit/publish/deployments/` なし。キーらしき値の検索でヒットなし（PLAN.md の `Sys.setenv(CARTO_BASEMAP_KEY='')` の説明のみ）
 - ユーザー指示で `git push -u origin main`。リモートの `main` = `65d1ec8`（ローカルと一致）。push 後、このログ追記を別コミットにしている
 - 残り: Posit Connect Cloud への新規デプロイ（ユーザー操作、`CARTO_BASEMAP_KEY` は secret）
+
+### Phase 6-3: Posit Connect Cloud への新規デプロイ（2026-09-23, ユーザー操作 + Opus 5.5）
+
+- 作業フォルダは C: のまま（G: への移動は、sf のセグフォルト記録と `.git` の同期リスクのため見送り。ユーザー判断）
+- ユーザーが Positron（Posit Publisher 2.13.10）で `shiny_app/` を開き、新規デプロイ設定 `.posit/publish/Kansai MGNST viewer — penalize-O1E2.toml` を作成
+- Publisher が生成した `files` は `/app.R` だけだった → `R`, `data`, `renv.lock`, `.renvignore` を追加（このままだと起動時に `R/constants.R` や `.rds` が無くて落ちる）
+- `[r]` に `package_file` / `package_manager` を書いたら「not allowed」エラー → スキーマ（`posit-publishing-schema-v3.json`）を確認し、**Connect Cloud の `[r]` は `version` だけ許可**と判明。`version = "4.6.1"` のみに修正
+- ユーザーが secret `CARTO_BASEMAP_KEY` を設定してデプロイ（2026-09-23T05:10Z）。アップロードは 12 ファイル（`prep/` なし）
+- 公開 URL: <https://01a0ccab-923c-ef0c-b3be-aa4fc076178b.share.connect.posit.cloud/>（認証なしで 200 = 公開。GitHub リポジトリは private のまま）
+- 公開版の確認: 背景タイルは鍵付き（透かしなし）、5 タブでブラウザのエラー 0、Shiny の出力エラー 0、Moran 図と行列図の描画あり、Swipe の左右ポリゴン 396、fit 表 11 行
+- 設定 `.toml` をコミット（`deployments/` は ignore）。両 README に Live demo の URL とデプロイ時の注意を追記
 - 前回リポジトリ名は `git remote -v` で `s-ohta-s/spatial-interactions` を確認してからリンクした
